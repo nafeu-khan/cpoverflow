@@ -324,11 +324,11 @@ const ChatRoomPage = () => {
   const otherParticipant = chatRoom?.other_participant || null
 
   // Detailed debug logs
-  console.log('=== CHAT ROOM DEBUG ===')
-  console.log('Current user from AuthContext:', currentUser)
-  console.log('Chat room data:', chatRoom)
-  console.log('Other participant from API:', otherParticipant)
-  console.log('Messages count:', messages.length)
+  // console.log('=== CHAT ROOM DEBUG ===')
+  // console.log('Current user from AuthContext:', currentUser)
+  // console.log('Chat room data:', chatRoom)
+  // console.log('Other participant from API:', otherParticipant)
+  // console.log('Messages count:', messages.length)
   if (messages.length > 0) {
     console.log('Sample message:', messages[0])
   }
@@ -428,13 +428,13 @@ const ChatRoomPage = () => {
               
               // Debug logs
               if (index === 0) {
-                console.log('=== CHAT DEBUG INFO ===')
-                console.log('Current user:', currentUser)
-                console.log('Current user ID (parsed):', currentUserId)
-                console.log('First message sender:', message.sender)
-                console.log('First message sender ID:', messageUserId)
-                console.log('Is own message:', isOwnMessage)
-                console.log('======================')
+                // console.log('=== CHAT DEBUG INFO ===')
+                // console.log('Current user:', currentUser)
+                // console.log('Current user ID (parsed):', currentUserId)
+                // console.log('First message sender:', message.sender)
+                // console.log('First message sender ID:', messageUserId)
+                // console.log('Is own message:', isOwnMessage)
+                // console.log('======================')
               }
               
               const showDate = index === 0 || 
@@ -464,7 +464,7 @@ const ChatRoomPage = () => {
                       <div className="max-w-xs lg:max-w-md">
                         <div className="bg-primary-500 text-white px-4 py-3 rounded-2xl rounded-br-md shadow-sm">
                           <p className="text-sm leading-relaxed break-words">{message.content}</p>
-                          <p className="text-xs opacity-70 mt-1">YOU (ID: {message.sender.id})</p>
+                          {/* <p className="text-xs opacity-70 mt-1">YOU (ID: {message.sender.id})</p> */}
                         </div>
                         <div className="flex items-center justify-end gap-1 mt-1 px-2">
                           <span className="text-xs text-gray-600">
@@ -494,7 +494,7 @@ const ChatRoomPage = () => {
                       <div className="max-w-xs lg:max-w-md">
                         <div className="bg-white dark:bg-gray-700 text-dark200_light900 px-4 py-3 rounded-2xl rounded-bl-md shadow-sm border border-gray-200 dark:border-gray-600">
                           <p className="text-sm leading-relaxed break-words">{message.content}</p>
-                          <p className="text-xs opacity-70 mt-1">OTHER ({message.sender.username}, ID: {message.sender.id})</p>
+                          {/* <p className="text-xs opacity-70 mt-1">OTHER ({message.sender.username}, ID: {message.sender.id})</p> */}
                         </div>
                         <div className="flex items-center justify-start gap-1 mt-1 px-2">
                           <span className="text-xs text-dark400_light500">
