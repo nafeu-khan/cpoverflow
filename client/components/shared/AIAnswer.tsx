@@ -1,0 +1,159 @@
+'use client';
+
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { 
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import Image from 'next/image';
+
+interface AIAnswerProps {
+  questionTitle: string;
+  questionContent: string;
+  questionTags: string[];
+}
+
+const AIAnswer = ({ questionTitle, questionContent, questionTags }: AIAnswerProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [aiResponse, setAiResponse] = useState<string>('');
+  const [loading, setLoading] = useState(false);
+  const [hasGenerated, setHasGenerated] = useState(false);
+
+  const generateAIAnswer = async () => {
+    setLoading(true);
+    
+    try {
+      const response = await fetch('/api/ai/generate-answer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: questionTitle,
+          content: questionContent,
+          tags: questionTags,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate AI answer');
+      }
+
+      const data = await response.json();
+      setAiResponse(data.answer);
+      setHasGenerated(true);
+      setIsOpen(true);
+    } catch (error) {
+      console.error('Error generating AI answer:', error);
+      setAiResponse('Sorry, I encountered an error while generating the answer. Please try again later.');
+      setHasGenerated(true);
+      setIsOpen(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Simple markdown renderer
+  const renderMarkdown = (text: string) => {
+    return text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/`([^`]+)`/g, '<code class="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm">$1</code>')
+      .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre class="bg-gray-900 text-white p-4 rounded-lg overflow-x-auto"><code>$2</code></pre>')
+      .replace(/\n/g, '<br>');
+  };
+
+  return (
+    <div className="mt-6 border border-light-700 dark:border-dark-400 rounded-lg p-4 bg-light-900 dark:bg-dark-200">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Image 
+            src="/assets/icons/stars.svg" 
+            alt="AI" 
+            width={20} 
+            height={20} 
+            className="text-primary-500"
+          />
+          <span className="text-dark200_light900 font-medium">AI Generated Answer</span>
+        </div>
+        
+        {!hasGenerated ? (
+          <Button
+            onClick={generateAIAnswer}
+            disabled={loading}
+            className="bg-primary-500 hover:bg-primary-600 text-white"
+          >
+            {loading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 mr-2 border-b-2 border-white"></div>
+                Generating...
+              </>
+            ) : (
+              <>
+                <Image 
+                  src="/assets/icons/stars.svg" 
+                  alt="Generate" 
+                  width={16} 
+                  height={16} 
+                  className="mr-2"
+                />
+                Generate AI Answer
+              </>
+            )}
+          </Button>
+        ) : (
+          <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className="text-dark200_light900">
+                {isOpen ? (
+                  <>
+                    <Image 
+                      src="/assets/icons/chevron-up.svg" 
+                      alt="Collapse" 
+                      width={16} 
+                      height={16} 
+                      className="mr-2"
+                    />
+                    Collapse Answer
+                  </>
+                ) : (
+                  <>
+                    <Image 
+                      src="/assets/icons/chevron-down.svg" 
+                      alt="Expand" 
+                      width={16} 
+                      height={16} 
+                      className="mr-2"
+                    />
+                    Expand Answer
+                  </>
+                )}
+              </Button>
+            </CollapsibleTrigger>
+          </Collapsible>
+        )}
+      </div>
+
+      {hasGenerated && (
+        <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+          <CollapsibleContent className="mt-4">
+            <div 
+              className="prose prose-slate dark:prose-invert max-w-none text-dark200_light900"
+              dangerouslySetInnerHTML={{ __html: renderMarkdown(aiResponse) }}
+            />
+            
+            <div className="mt-4 pt-4 border-t border-light-700 dark:border-dark-400">
+              <p className="text-sm text-dark400_light700">
+                💡 This answer was generated by AI and may not be completely accurate. Please verify the information and use your own judgment.
+              </p>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      )}
+    </div>
+  );
+};
+
+export default AIAnswer;
